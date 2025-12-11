@@ -1,102 +1,91 @@
-// chart.js (Dedicated Chart.js Module)
+// history.js (Simplified & Modular)
+import { loadLogs, deleteLog } from './data.js';
+import { renderMoodChart } from './chart.js';
+import { startEditLog } from './logger.js';
+import { exportLogsToPDF } from './export.js';
 
-let moodRadarChart = null;
+// --- DURATION MAPPING ---
+// Map the saved short value (from index.html options) to the long display text.
+const DURATION_MAP = {
+  '<1min': 'Less Than 1 Minute',
+  '1-10min': '1 to 10 Minutes',
+  '10-60min': '10 to 60 Minutes',
+  '1-4hr': '1 to 4 Hours',
+  '4-8hr': '4 to 8 Hours',
+  '1day': '1 Full Day',
+  '2days': '2 Full Days',
+  '3+days': '3 or More Days',
+};
 
-/**
- * Renders the Mood Composition Radar Chart based on recent logs.
- * @param {Array} logs - The full array of logs.
- */
-export function renderMoodChart(logs) {
-  // This logic is now purely focused on preparing and drawing the chart.
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+// --- HISTORY RENDERING ---
+export function renderHistory() {
+  const logs = loadLogs();
+  const logList = document.getElementById('log-list');
 
-  const recentLogs = logs.filter(
-    (log) => new Date(log.timestamp) > thirtyDaysAgo,
-  );
+  logList.innerHTML = '';
 
-  const moodCounts = recentLogs.reduce((acc, log) => {
-    acc[log.moodState] = (acc[log.moodState] || 0) + 1;
-    return acc;
-  }, {});
-
-  const dataPoints = [
-    moodCounts['UP'] || 0,
-    moodCounts['MIXED'] || 0,
-    moodCounts['DOWN'] || 0,
-  ];
-
-  const totalLogs = recentLogs.length;
-  const dataPercentages = dataPoints.map((count) =>
-    totalLogs > 0 ? Math.round((count / totalLogs) * 100) : 0,
-  );
-
-  const data = {
-    labels: [
-      'UP (High Energy)',
-      'MIXED (Chaotic/Irritable)',
-      'DOWN (Low Energy)',
-    ],
-    datasets: [
-      {
-        label: `Mood Composition (Last ${totalLogs} Logs)`,
-        data: dataPercentages,
-        backgroundColor: 'rgba(63, 81, 181, 0.4)',
-        borderColor: 'rgba(63, 81, 181, 1)',
-        borderWidth: 2,
-        pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-        pointBorderColor: '#fff',
-      },
-    ],
-  };
-
-  const config = {
-    type: 'radar',
-    data: data,
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      scales: {
-        r: {
-          angleLines: { display: true },
-          suggestedMin: 0,
-          suggestedMax: 100,
-          ticks: {
-            stepSize: 20,
-            callback: function (value) {
-              return value + '%';
-            },
-          },
-          pointLabels: {
-            font: { size: 14 },
-          },
-        },
-      },
-      plugins: {
-        legend: { display: true, position: 'top' },
-        title: { display: true, text: 'Mood Composition (%)' },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              label += `${context.formattedValue}% (${
-                dataPoints[context.dataIndex]
-              } logs)`;
-              return label;
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const ctx = document.getElementById('mood-chart');
-
-  if (moodRadarChart) {
-    moodRadarChart.destroy();
+  if (logs.length === 0) {
+    logList.innerHTML =
+      '<p style="text-align: center; margin-top: 20px;">No logs yet. Go log a moment!</p>';
+    renderMoodChart([]); // Pass empty array to clear chart
+    return;
   }
-  moodRadarChart = new Chart(ctx, config);
+  // --- Wire up PDF Export Button ---
+  const exportBtn = document.getElementById('export-pdf-btn');
+  if (exportBtn) {
+    // Remove existing listener to prevent duplicates before adding the new one
+    exportBtn.removeEventListener('click', exportLogsToPDF);
+    exportBtn.addEventListener('click', exportLogsToPDF);
+  }
+
+  logs.slice(0, 25).forEach((log) => {
+    const date = new Date(log.timestamp).toLocaleString();
+    const listItem = document.createElement('li');
+
+    listItem.classList.add('log-entry');
+    listItem.dataset.id = log.id;
+    listItem.dataset.state = log.moodState;
+
+    // --- NEW LOGIC HERE ---
+    const durationValue = log.moodDuration;
+    // Look up the full text in the map. If the value is an empty string ("")
+    // or not found in the map, use '---' as a clean placeholder.
+    const durationDisplay = durationValue
+      ? DURATION_MAP[durationValue] || 'Duration Error'
+      : '---';
+    // -----------------------
+
+    listItem.innerHTML = `
+            <div class="log-header">
+                <span class="log-state">${log.moodState}</span>
+                <span class="log-time">${date}</span>
+                <button class="edit-log-btn">✏️</button>
+                <button class="delete-log-btn">🗑️</button>
+            </div>
+            <p class="log-tags">${log.tags.join(', ')}</p>
+            <p class="log-notes">${log.notes || 'No notes.'}</p>
+            <p class="log-context">
+                Duration: ${durationDisplay} | Sleep: ${
+      log.sleepHours || '---'
+    }h | Caffeine: ${log.caffeineUnits || '---'}
+            </p>
+        `;
+
+    listItem.querySelector('.delete-log-btn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to delete this log?')) {
+        deleteLog(log.id);
+        renderHistory();
+      }
+    });
+
+    logList.appendChild(listItem);
+
+    listItem.querySelector('.edit-log-btn').addEventListener('click', () => {
+      startEditLog(log); // Pass the entire log object
+    });
+
+    logList.appendChild(listItem);
+  });
+
+  renderMoodChart(logs); // Call the chart module function
 }
