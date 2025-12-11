@@ -286,6 +286,24 @@ input[type='number'] {
   border-color: #3f51b5;
 }
 
+/* --- HISTORY VIEW / CHART STYLING --- */
+
+#history-view {
+  /* This ensures the history view takes up the full width */
+  padding: 0 10px;
+}
+
+#mood-chart {
+  /* The canvas must use 100% of the width of its parent container */
+  width: 100% !important;
+  /* This is crucial: Set a reasonable max height to allow the chart to be taller on mobile, 
+     but prevent distortion. A height of 250-350px is often good for mobile.
+     If you did not have this, it might stretch too tall or stay too short. */
+  height: 300px;
+  /* The Chart.js option `maintainAspectRatio: false` in chart.js combined 
+     with an explicit container size here should fix the scaling issue. */
+}
+
 /* --- LOG HISTORY LIST --- */
 
 #log-list {
