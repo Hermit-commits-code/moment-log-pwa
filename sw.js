@@ -4,20 +4,20 @@ const CACHE_NAME = 'mood-log-v1';
 
 // List of files to cache upon installation
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/style.css',
-  '/app.js',
-  '/data.js',
-  '/navigation.js',
-  '/logger.js',
-  '/history.js',
-  '/chart.js',
-  '/crisis.js',
-  '/export.js',
-  '/images/icon-192.png',
-  '/images/icon-512.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './style.css',
+  './app.js',
+  './data.js',
+  './navigation.js',
+  './logger.js',
+  './history.js',
+  './chart.js',
+  './crisis.js',
+  './export.js',
+  './images/icon-192.png',
+  './images/icon-512.png',
   // Note: External CDNs (Chart.js, jsPDF) are typically not cached here
 ];
 
