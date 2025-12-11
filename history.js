@@ -4,6 +4,19 @@ import { renderMoodChart } from './chart.js';
 import { startEditLog } from './logger.js';
 import { exportLogsToPDF } from './export.js';
 
+// --- DURATION MAPPING ---
+// Map the saved short value (from index.html options) to the long display text.
+const DURATION_MAP = {
+  '<1min': 'Less Than 1 Minute',
+  '1-10min': '1 to 10 Minutes',
+  '10-60min': '10 to 60 Minutes',
+  '1-4hr': '1 to 4 Hours',
+  '4-8hr': '4 to 8 Hours',
+  '1day': '1 Full Day',
+  '2days': '2 Full Days',
+  '3+days': '3 or More Days',
+};
+
 // --- HISTORY RENDERING ---
 export function renderHistory() {
   const logs = loadLogs();
@@ -33,6 +46,15 @@ export function renderHistory() {
     listItem.dataset.id = log.id;
     listItem.dataset.state = log.moodState;
 
+    // --- NEW LOGIC HERE ---
+    const durationValue = log.moodDuration;
+    // Look up the full text in the map. If the value is an empty string ("")
+    // or not found in the map, use '---' as a clean placeholder.
+    const durationDisplay = durationValue
+      ? DURATION_MAP[durationValue] || 'Duration Error'
+      : '---';
+    // -----------------------
+
     listItem.innerHTML = `
             <div class="log-header">
                 <span class="log-state">${log.moodState}</span>
@@ -43,9 +65,9 @@ export function renderHistory() {
             <p class="log-tags">${log.tags.join(', ')}</p>
             <p class="log-notes">${log.notes || 'No notes.'}</p>
             <p class="log-context">
-                Duration: ${log.moodDuration || 'N/A'} | Sleep: ${
-      log.sleepHours || 'N/A'
-    }h | Caffeine: ${log.caffeineUnits || 'N/A'}
+                Duration: ${durationDisplay} | Sleep: ${
+      log.sleepHours || '---'
+    }h | Caffeine: ${log.caffeineUnits || '---'}
             </p>
         `;
 
