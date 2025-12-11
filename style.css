@@ -1,0 +1,411 @@
+/* style.css */
+
+:root {
+  /* Color Palette */
+  --up-color: #e57373; /* Red/Agitated */
+  --mixed-color: #ffb74d; /* Orange/Neutral */
+  --down-color: #64b5f6; /* Blue/Withdrawn */
+  --default-bg: #f5f5f5;
+  --font-color: #333;
+  --header-bg: #f9f9f9;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--default-bg);
+  color: var(--font-color);
+  transition: background-color 0.5s ease;
+}
+
+header {
+  background-color: #ffffff; /* White background */
+  padding: 15px 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Use Flexbox to align all header content */
+  display: flex;
+  flex-direction: column; /* Stack title and nav links vertically */
+  align-items: center; /* Center everything horizontally */
+  text-align: center;
+}
+
+/* --- DYNAMIC MOOD THEMES (The Engagement) --- */
+
+/* Mood: UP (Agitated/Fast) */
+.mood-up {
+  background-color: #ffebee;
+  animation: pulse-bg 10s infinite alternate;
+}
+@keyframes pulse-bg {
+  from {
+    background-color: #ffebee;
+  }
+  to {
+    background-color: #ffccbc;
+  }
+}
+
+/* Mood: MIXED (Chaotic/Clashing) */
+.mood-mixed {
+  /* Subtle static/visual clash effect */
+  background: repeating-linear-gradient(
+    45deg,
+    var(--mixed-color) 0%,
+    var(--mixed-color) 5px,
+    #f7f7f7 5px,
+    #f7f7f7 10px
+  );
+  animation: static-shift 0.5s infinite alternate;
+}
+@keyframes static-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 5px 5px;
+  }
+}
+
+/* Mood: DOWN (Soothing/Slow) */
+.mood-down {
+  background-color: #e3f2fd;
+}
+
+/* --- LAYOUT AND VIEWS --- */
+
+#app-container {
+  padding: 10px;
+}
+
+#app-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  margin-bottom: 10px; /* Space below the title before the nav links */
+}
+
+.nav-links {
+  /* Create a horizontal row for the two navigation buttons */
+  display: flex;
+  gap: 15px; /* Space between the Crisis and History buttons */
+  width: 100%; /* Take full width of the header container */
+  max-width: 300px; /* Constrain width on larger screens */
+  justify-content: center; /* Center the buttons within their container */
+  margin-bottom: 5px;
+}
+
+#view-crisis-btn,
+#view-history-btn {
+  padding: 8px 15px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc; /* Subtle border */
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  flex-grow: 1; /* Allows buttons to share space evenly */
+}
+
+#view-crisis-btn:hover,
+#view-history-btn:hover {
+  background-color: #ddd;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* --- MOOD SELECTOR (The Slider) --- */
+
+#mood-selector {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  width: 90%;
+  max-width: 400px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.mood-zone {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  transition: opacity 0.3s, box-shadow 0.3s, border 0.3s;
+}
+
+.mood-zone.up {
+  background-color: var(--up-color);
+}
+.mood-zone.mixed {
+  background-color: var(--mixed-color);
+}
+.mood-zone.down {
+  background-color: var(--down-color);
+}
+
+.mood-zone.selected-zone {
+  /* Add a visual highlight to the selected zone */
+  opacity: 0.7; /* Dim the others slightly */
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8) inset; /* Subtle inner glow */
+  border: 3px solid white;
+  box-sizing: border-box;
+}
+
+#mood-duration {
+  /* Layout and Sizing */
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+
+  /* Appearance */
+  border: 2pxsolid #ccc;
+  border: radius 8px;
+  background-color: #fff;
+  font-size: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+
+  /* Custom Arrow */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%234A4A4A" d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+  background-size: 20px auto;
+
+  /* Smooth Transition */
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#mood-duration:focus {
+  border-color: #3f51b5;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+}
+
+/* Style for the options */
+#mood-duration:option {
+  padding: 10px;
+}
+
+/* --- DETAILS FORM --- */
+
+#details-form {
+  background-color: white;
+  border-radius: 8px;
+  margin: 20px 10px;
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.5s ease, padding 0.5s ease, opacity 0.5s ease;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+#details-form.collapsed {
+  max-height: 0;
+  padding: 0 20px;
+  margin: 0 10px;
+  opacity: 0;
+}
+
+h2 {
+  color: #444;
+  padding-top: 15px;
+  margin-top: 0;
+}
+
+textarea,
+input[type='number'] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.context-row {
+  display: flex;
+  gap: 10px;
+}
+
+.context-row input {
+  flex-grow: 1;
+}
+
+#save-log-btn {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* --- TAGS STYLING --- */
+
+#tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tag-btn {
+  background-color: #eee;
+  color: #555;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.tag-btn.selected {
+  background-color: #3f51b5;
+  color: white;
+  border-color: #3f51b5;
+}
+
+/* --- LOG HISTORY LIST --- */
+
+#log-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 10px;
+}
+
+.log-entry {
+  background-color: white;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* For the mood color marker */
+  border-left: 5px solid transparent;
+}
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.log-state {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: white;
+  font-size: 14px;
+}
+
+/* Specific log colors */
+.log-entry[data-state='UP'] {
+  border-left-color: var(--up-color);
+}
+.log-entry[data-state='UP'] .log-state {
+  background-color: var(--up-color);
+}
+
+.log-entry[data-state='MIXED'] {
+  border-left-color: var(--mixed-color);
+}
+.log-entry[data-state='MIXED'] .log-state {
+  background-color: var(--mixed-color);
+}
+
+.log-entry[data-state='DOWN'] {
+  border-left-color: var(--down-color);
+}
+.log-entry[data-state='DOWN'] .log-state {
+  background-color: var(--down-color);
+}
+
+.log-time {
+  font-size: 12px;
+  color: #777;
+}
+.log-tags {
+  font-style: italic;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+.log-notes {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.log-context {
+  font-size: 12px;
+  color: #888;
+}
+.delete-log-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+}
+#export-pdf-btn {
+  display: block;
+  width: 90%; /* A little less than full width for padding */
+  max-width: 400px;
+  margin: 20px auto 30px auto; /* Centers it with space */
+  padding: 12px 20px;
+  background-color: #4caf50; /* A friendly green color */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#export-pdf-btn:hover {
+  background-color: #45a049;
+}
+/* --- CRISIS VIEW --- */
+
+#crisis-plan-text {
+  min-height: 250px;
+}
+
+.contact-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.contact-name {
+  font-weight: bold;
+}
+
+.contact-phone-btn {
+  padding: 8px 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+}

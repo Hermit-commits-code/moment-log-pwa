@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moment Tracker PWA</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body class="mood-default">
+    <header>
+      <h1 id="app-title">Log Your Moment</h1>
+      <div class="nav-links">
+        <button id="view-crisis-btn">Crisis</button>
+        <button id="view-history-btn">History</button>
+      </div>
+    </header>
+
+    <main id="app-container">
+      <section id="logger-view" class="view active">
+        <div id="mood-selector">
+          <div class="mood-zone up" data-mood="UP">UP</div>
+          <div class="mood-zone mixed" data-mood="MIXED">MIXED</div>
+          <div class="mood-zone down" data-mood="DOWN">DOWN</div>
+        </div>
+
+        <form id="details-form" class="collapsed">
+          <input type="hidden" id="editing-log-id" value="">
+          <h2>Details & Context</h2>
+
+          <div id="tags-container">
+            <input
+              type="hidden"
+              id="selected-tags"
+              name="selected-tags"
+              value=""
+            />
+          </div>
+
+          <textarea id="notes" placeholder="Notes..."></textarea>
+          <select name="mood-duration" id="mood-duration"">
+            <option value="" disabled="disabled" selected="selected">How long did this mood last</option>
+            <option value="<1min">Less Than 1 minute</option>
+            <option value="1-10min">1-10 minutes</option>
+            <option value="10-60min">10-60 minutes</option>
+            <option value="1-4hr">1-4 hours</option>
+            <option value="4-8hr">4-8 hours</option>
+            <option value="1day">1 full day</option>
+            <option value="2days">2 full days</option>
+            <option value="3+days">3 or more days</option>
+          </select>
+          <div class="context-row">
+            <input type="number" id="sleep-hours" placeholder="Sleep (h)" />
+            <input
+              type="number"
+              id="caffeine-units"
+              placeholder="Caffeine (units)"
+            />
+          </div>
+
+          <button type="submit" id="save-log-btn">SAVE LOG</button>
+        </form>
+      </section>
+
+      <section id="history-view" class="view hidden">
+        <h2>Monthly Trend</h2>
+        <canvas id="mood-chart"></canvas>
+        <button id="export-pdf-btn">Download PDF Report</button>
+        <hr />
+        <h2>Recent Logs</h2>
+        <ul id="log-list"></ul>
+      </section>
+
+      <section id="crisis-view" class="view hidden">
+        <h2 style="color: red">⚠️ Emergency Contacts</h2>
+        <div id="emergency-contacts"></div>
+        <hr />
+        <h2>My Personal Crisis Plan</h2>
+        <textarea
+          id="crisis-plan-text"
+          placeholder="Steps to take when in crisis..."
+        ></textarea>
+        <p id="save-status" style="font-style: italic; color: green"></p>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="module" src="data.js"></script>
+    <script type="module" src="chart.js"></script>
+    <script type="module" src="navigation.js"></script>
+    <script type="module" src="logger.js"></script>
+    <script type="module" src="history.js"></script>
+    <script type="module" src="crisis.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
